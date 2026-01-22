@@ -42,9 +42,15 @@ export default function Hero() {
       });
     }
 
+    // Use non-null assertions since we've already checked above
+    const canvasWidth = canvas.width;
+    const canvasHeight = canvas.height;
+    // Store ctx reference to avoid TypeScript closure issues
+    const context = ctx;
+
     function animate() {
-      ctx.fillStyle = "rgba(10, 10, 10, 0.1)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = "rgba(10, 10, 10, 0.1)";
+      context.fillRect(0, 0, canvasWidth, canvasHeight);
 
       nodes.forEach((node) => {
         // Update position
@@ -52,14 +58,14 @@ export default function Hero() {
         node.y += node.vy;
 
         // Bounce off edges
-        if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
-        if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+        if (node.x < 0 || node.x > canvasWidth) node.vx *= -1;
+        if (node.y < 0 || node.y > canvasHeight) node.vy *= -1;
 
         // Draw node
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-        ctx.fillStyle = node.color;
-        ctx.fill();
+        context.beginPath();
+        context.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        context.fillStyle = node.color;
+        context.fill();
 
         // Draw connections
         nodes.forEach((otherNode) => {
@@ -68,12 +74,12 @@ export default function Hero() {
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance < 150) {
-            ctx.beginPath();
-            ctx.moveTo(node.x, node.y);
-            ctx.lineTo(otherNode.x, otherNode.y);
-            ctx.strokeStyle = `rgba(99, 102, 241, ${0.2 * (1 - distance / 150)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
+            context.beginPath();
+            context.moveTo(node.x, node.y);
+            context.lineTo(otherNode.x, otherNode.y);
+            context.strokeStyle = `rgba(99, 102, 241, ${0.2 * (1 - distance / 150)})`;
+            context.lineWidth = 0.5;
+            context.stroke();
           }
         });
       });
@@ -84,8 +90,10 @@ export default function Hero() {
     animate();
 
     const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
     };
 
     window.addEventListener("resize", handleResize);
